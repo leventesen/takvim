@@ -1,0 +1,206 @@
+<html lang="tr">
+
+<head>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,900&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: 21cm 29.7cm;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                width: 21cm;
+                height: 29.7cm;
+            }
+
+            button,
+            .print {
+                display: none !important;
+            }
+
+        }
+
+        body {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins';
+            font-size: 22px;
+            opacity: 0.9;
+        }
+
+        body,
+        body * {
+            display: flex;
+        }
+
+        .a4-size {
+            width: 21cm;
+            height: 29.7cm;
+            flex-direction: column;
+        }
+
+        .a5-size {
+            width: 100%;
+            height: 50%;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .content {
+            flex-direction: column;
+            width: 80%;
+            height: 70%;
+
+        }
+
+        .month-header {
+            justify-content: center;
+            align-items: center;
+            padding: 0 0 .5em 0;
+        }
+
+        .month-name {
+            flex-grow: 1;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: 500;
+            color: #b00;
+            text-transform: uppercase;
+        }
+
+        .days-header {
+            justify-content: center;
+            align-items: center;
+            padding: .5em 0;
+            font-weight: bold;
+            border-bottom: 1px solid black;
+        }
+
+        .day-name {
+            flex-grow: 1;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .weeks {
+            flex-direction: column;
+            flex-grow: 1;
+            border: 0px solid grey;
+        }
+
+        .week {
+            height: 16.666%;
+        }
+
+        .day {
+            width: 14.285%;
+            flex-grow: 1;
+            justify-content: center;
+            align-items: center;
+            font-size: 26px;
+            font-weight: 500;
+            border: 0px solid grey;
+        }
+
+        .day-name:nth-child(6),
+        .day-name:nth-child(7),
+        .day:nth-child(6),
+        .day:nth-child(7) {
+            color: #b00;
+        }
+
+        button {
+            margin: 0 1em;
+        }
+
+        .print {
+            justify-content: center;
+            align-items: center;
+            margin: 1em;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <script>
+        angular.module('calendarApp', [])
+            .controller('CalendarController', function ($scope) {
+                const now = new Date();
+                this.year = now.getFullYear();
+                this.month = now.getMonth() + 1 + parseInt($scope.initialMonth);
+                this.monthNames = [
+                    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+                    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+                ];
+                this.dayNames = ['PT', 'SA', 'ÇA', 'PE', 'CU', 'CT', 'PZ'];
+
+                this.fillCalendar = function () {
+                    this.firstDay = new Date(this.year, this.month - 1).getDay();
+                    this.firstDay = this.firstDay === 0 ? 7 : this.firstDay;
+
+                    this.dayCount = new Date(this.year, this.month, 0).getDate();
+
+                    this.weeks = [1, 2, 3, 4, 5, 6].map(week => {
+                        return [1, 2, 3, 4, 5, 6, 7].map(day => {
+                            return (week - 1) * 7 + day - this.firstDay + 1;
+                        }).map(day => day < 1 ? '' : day)
+                            .map(day => day > this.dayCount ? '' : day)
+                    });
+                }
+
+                this.fillCalendar();
+
+                this.prevMonth = function () {
+                    if (this.month == 1) {
+                        this.month = 12;
+                        this.year--;
+                    } else {
+                        this.month--;
+                    }
+                    this.fillCalendar();
+                };
+
+                this.nextMonth = function () {
+                    if (this.month == 12) {
+                        this.month = 1;
+                        this.year++;
+                    } else {
+                        this.month++;
+                    }
+                    this.fillCalendar();
+                };
+            });
+    </script>
+</head>
+
+<body ng-app="calendarApp">
+    <div class="print">
+        <button class="print-button" onclick="window.print()">Yazdır</button>
+    </div>
+    <div class="a4-size">
+        <div class="a5-size" ng-repeat="initialMonth in [0, 1]" ng-init="initialMonth = initialMonth"
+            ng-controller="CalendarController as calendar">
+            <div class="content">
+                <div class="month-header">
+                    <button class="prev-month" ng-click="calendar.prevMonth()">-</button>
+                    <div class="month-name">{{calendar.monthNames[calendar.month - 1]}} {{calendar.year}}</div>
+                    <button class="next-month" ng-click="calendar.nextMonth()">+</button>
+                </div>
+                <div class="days-header">
+                    <div class="day-name" ng-repeat="dayName in calendar.dayNames">{{dayName}}</div>
+                </div>
+                <div class="weeks">
+                    <div class="week" ng-repeat="week in calendar.weeks track by $index">
+                        <div class="day" ng-repeat="day in week track by $index">{{day}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
