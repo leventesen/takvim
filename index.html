@@ -187,9 +187,9 @@
             ng-controller="CalendarController as calendar">
             <div class="content">
                 <div class="month-header">
-                    <button class="prev-month" ng-click="calendar.prevMonth()">-</button>
+                    <button class="prev-month" ng-click="calendar.prevMonth()">&lt;</button>
                     <div class="month-name">{{calendar.monthNames[calendar.month - 1]}} {{calendar.year}}</div>
-                    <button class="next-month" ng-click="calendar.nextMonth()">+</button>
+                    <button class="next-month" ng-click="calendar.nextMonth()">&gt;</button>
                 </div>
                 <div class="days-header">
                     <div class="day-name" ng-repeat="dayName in calendar.dayNames">{{dayName}}</div>
